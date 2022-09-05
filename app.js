@@ -42,8 +42,9 @@ let producto = "";
 let productosSeleccionados = "";
 let descuentoDiez = 0;
 
+
 function descuento(valor) {
-  resultadoDescuentoDiez = valor - (valor * 10) / 100;
+  descuentoDiez = valor - (valor * 10) / 100;
 }
 
 function seleccionProductos() {
@@ -94,7 +95,7 @@ function seleccionProductos() {
   if (total >= 150000) {
     descuento(`${total}`);
     alert(
-      `Seleccionó los productos:\n${productosSeleccionados}Y el total de su pedido es de: $${total} pesos\nPor superar los $150000 se le aplica un descuento del %10 y el total final a pagar es $${resultadoDescuentoDiez}`
+      `Seleccionó los productos:\n${productosSeleccionados}Y el total de su pedido es de: $${total} pesos\nPor superar los $150000 se le aplica un descuento del %10 y el total final a pagar es $${descuentoDiez}`
     );
   } else {
     alert(
