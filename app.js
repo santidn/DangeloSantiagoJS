@@ -27,6 +27,7 @@ if (isNaN(n1)) {
 
 //SIMULADOR DE E-COMMERCE
 
+/*
 let pedido = prompt(`Selecciona tus componentes o escribe 7 para finalizar: 
 1.Motherboard-$20000
 2.Procesador-$30000
@@ -104,3 +105,110 @@ function seleccionProductos() {
   }
 }
 seleccionProductos();
+*/
+
+//DESAFIO INCORPORAR ARRAYS Y PRIMERA ENTREGA PROYECTO FINAL
+
+class producto {
+  constructor(id, componente, nombre, precio) {
+    this.id = id;
+    this.componente = componente;
+    this.nombre = nombre;
+    this.precio = Number(precio);
+  }
+}
+
+const p1 = new producto(1, "Motherboard", "Asus B450", 20000);
+const p2 = new producto(2, "Procesador", "Ryzen 5600x", 50000);
+const p3 = new producto(3, "Memoria ram", "G-Skill Trident Z 16gb", 25000);
+const p4 = new producto(4, "Disco rígido", "NVMe Samsung 970 evo 1TB", 45000);
+const p5 = new producto(5, "Placa de video", "Asus RTX 3080ti", 330000);
+
+const productos = [];
+
+productos.push(p1);
+productos.push(p2);
+productos.push(p3);
+productos.push(p4);
+productos.push(p5);
+
+const carrito = [];
+
+function addToCart() {
+  let productoId = Number(
+    prompt(`Selecciona tus componentes o escribe 6 para continuar: 
+1: Motherboard, Asus B450, $20000
+2: Procesador, Ryzen 5600x, $50000
+3: Memoria ram, G-Skill Trident Z 16gb", $25000
+4: Disco rígido, NVMe Samsung 970 evo 1TB, $45000
+5: Placa de video, Asus RTX 3080ti, $330000
+6. Continuar`)
+  );
+
+  while (productoId != 6) {
+    let cantidad = Number(prompt("Seleccione la cantidad"));
+    let check = carrito.some((product) => product.id === productoId);
+    if (check == true) {
+      let producto = productos.find((product) => product.id === productoId);
+      producto.cantidad += cantidad;
+      producto.total = producto.precio * producto.cantidad;
+    } else {
+      let producto = productos.find((product) => product.id === productoId);
+      producto.cantidad = cantidad;
+      producto.total = producto.precio * cantidad;
+      carrito.push(producto);
+    }
+
+    productoId = Number(
+      prompt(`Selecciona tus componentes o escribe 6 para continuar: 
+1: Motherboard, Asus B450, $20000
+2: Procesador, Ryzen 5600x, $50000
+3: Memoria ram, G-Skill Trident Z 16gb", $25000
+4: Disco rígido, NVMe Samsung 970 evo 1TB, $45000
+5: Placa de video, Asus RTX 3080ti, $330000
+6. Continuar`)
+    );
+  }
+
+  let eleccion = Number(
+    prompt(`seleccione: 
+1. Si desea ir al carro y ver el total
+2. Si desea agregar mas productos a su carro
+3. Si desea VACIAR el carro y volver a elegir
+4. Si desea salir de la página`)
+  );
+
+  if (eleccion == 1) {
+    console.log(carrito);
+    calcularTotal(carrito);
+    console.log(`Su total va a ser: $${calcularTotal(carrito)}`);
+    finalizarCompra();
+  } else if (eleccion == 2) {
+    addToCart();
+  } else if (eleccion == 3) {
+    carrito.splice(0, carrito.length);
+    console.log(carrito);
+    addToCart();
+  } else if (eleccion == 4) {
+    alert("Gracias por visitarnos");
+  }
+}
+addToCart();
+
+function calcularTotal(carrito) {
+  let total = 0;
+  carrito.forEach((producto) => {
+    total += producto.total;
+  });
+  return total;
+}
+
+function finalizarCompra() {
+  let compra = prompt(`Presione 1 para finalizar compra
+Presione cualquier tecla para seguir comprando`);
+  if (compra == 1) {
+    alert("Muchas gracias por su compra");
+  } else {
+    addToCart();
+  }
+}
