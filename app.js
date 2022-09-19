@@ -109,6 +109,8 @@ seleccionProductos();
 
 //DESAFIO INCORPORAR ARRAYS Y PRIMERA ENTREGA PROYECTO FINAL
 
+
+/*
 class producto {
   constructor(id, componente, nombre, precio) {
     this.id = id;
@@ -212,3 +214,49 @@ Presione cualquier tecla para seguir comprando`);
     addToCart();
   }
 }
+*/
+
+//DESAFIO DOM
+
+class producto {
+  constructor(id, componente, img, nombre, precio) {
+    this.id = id;
+    this.componente = componente;
+    this.img = img;
+    this.nombre = nombre;
+    this.precio = Number(precio);
+  }
+}
+
+const p1 = new producto(1, "Motherboard", "img/motherboard.png", "Asus B450", 20000);
+const p2 = new producto(2, "Procesador", "img/procesador.png", "Ryzen 5600x", 50000);
+const p3 = new producto(3, "Memoria ram", "img/ram.png", "G-Skill Trident Z 16gb", 25000);
+const p4 = new producto(4, "Disco rígido", "img/ssd.png", "NVMe Samsung 970 evo 1TB", 45000);
+const p5 = new producto(5, "Placa de video","img/placa-video.png", "Asus RTX 3080ti", 330000);
+
+const productos = [];
+
+productos.push(p1, p2, p3,p4, p5);
+
+const mostrarProductos = (productos) => {
+  const seccionProductos = document.getElementById("seccion-productos")
+  productos.forEach ( producto => {
+    const card = document.createElement("card");
+    card.innerHTML += `<div class="card" style="width: 18rem;">
+    <img src="${producto.img}" class="card-img-top" alt="...">
+    <div class="card-body">
+      <h5 class="card-title">${producto.componente} ${producto.nombre}</h5>
+      <p class="card-text">$${producto.precio}</p>
+      <a href="#" class="btn btn-primary" id="button${producto.id}">SUMAR AL CARRITO</a>
+    </div>
+  </div>`
+  seccionProductos.appendChild(card);
+  
+  const button = document.getElementById(`button${producto.id}`);
+  button.addEventListener('click', () =>{
+    alert(`Agregaste ${producto.nombre}`)
+  })
+  })
+}
+
+mostrarProductos (productos)
