@@ -315,8 +315,9 @@ function addToCart(productoId) {
   }
 }
 
-
 */
+
+// 2DA ENTREGA PROYECTO FINAL
 
 class Producto {
   constructor(id, componente, img, nombre, precio) {
