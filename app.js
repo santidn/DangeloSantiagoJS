@@ -67,8 +67,9 @@ const mostrarProductos = (productos) => {
   const seccionProductos = document.getElementById("seccion-productos");
   productos.forEach((producto) => {
     const card = document.createElement("card");
-    card.innerHTML += `<div class="card" style="width: 18rem;">
-        <img src="${producto.img}" class="card-img-top" alt="...">
+    card.classList.add('d-flex', 'justify-content-center','col-12', 'col-md-6', 'col-xl-2')
+    card.innerHTML += `<div class="card mt-3 text-center" style="width: 18rem;">
+        <img src="${producto.img}" class="card-img-top"  alt="...">
         <div class="card-body">
         <h5 class="card-title">${producto.componente}: ${producto.nombre}</h5>
         <p class="card-text">$${producto.precio}</p>
@@ -129,7 +130,48 @@ function mostrarCarrito() {
   });
 
   section.innerHTML += `<p>Total: $${total}</p>`;
-  section.innerHTML += `<a class="btn btn-danger" id="buttonVaciar">vaciar carrito</a>`;
+  section.innerHTML += `<a class="btn btn-success" id="finalizarCompra">Finalizar compra</a>`;
+  section.innerHTML += `<a class="btn btn-danger ms-1" id="buttonVaciar">Vaciar carrito</a>`;
+
+  const buttonFinalizar = document.querySelector("#finalizarCompra");
+  buttonFinalizar.addEventListener("click", () => {
+const swalWithBootstrapButtons = Swal.mixin({
+  customClass: {
+    confirmButton: 'btn btn-success',
+    cancelButton: 'btn btn-danger'
+  },
+  buttonsStyling: false
+})
+
+swalWithBootstrapButtons.fire({
+  title: 'Esta seguro/a que desea finalizar?',
+  text: "Presione si para continuar o no para agregar mas productos",
+  icon: 'question',
+  showCancelButton: true,
+  confirmButtonText: 'Si',
+  cancelButtonText: 'No',
+  reverseButtons: true
+}).then((result) => {
+  if (result.isConfirmed) {
+    swalWithBootstrapButtons.fire(
+      'Felicitaciones!',
+      'Su compra fue procesada con exito',
+      'success'
+    )
+    vaciarCarrito();
+    addLocalStorage();
+  } else if (
+    result.dismiss === Swal.DismissReason.cancel
+  ) {
+    swalWithBootstrapButtons.fire(
+      'Compra cancelada',
+      'Puede continuar agregando productos',
+      'info'
+    )
+  }
+})
+
+  });
 
   const buttonV = document.querySelector("#buttonVaciar");
   buttonV.addEventListener("click", () => {
@@ -149,17 +191,21 @@ function vaciarCarrito() {
 //FUNCION PARA AGREGAR UNA UNIDAD DE PRODUCTO
 
 function productoAdd(p) {
-  p.cantidad += 1;
+  p.cantidad++;
 }
 
 //FUNCION PARA QUITAR UNA UNIDAD DE PRODUCTO
 
 function subtract(p) {
-  if (p.cantidad == 0) {
-    return;
-  }
-  p.cantidad -= 1;
+p.cantidad !== 0 && p.cantidad--;
 }
+
+// function subtract(p) {
+//   if (p.cantidad == 0) {
+//     return;
+//   }
+//   p.cantidad--;
+// }
 
 //FUNCION PARA AGREGAR UNIDAD CON BOTON SEGUN ID DE PRODUCTO
 
@@ -199,9 +245,15 @@ function addLocalStorage() {
 //Funcion para traer desde localStorage
 
 function getItemBack() {
-  const itemBack = localStorage.getItem("carrito");
-  if (itemBack !== null){
-    carrito = JSON.parse(itemBack);
-  }
-  mostrarCarrito();
+const itemBack = localStorage.getItem("carrito");
+itemBack !== null && (carrito = JSON.parse(itemBack));
+mostrarCarrito()
 }
+
+// function getItemBack() {
+//   const itemBack = localStorage.getItem("carrito");
+//   if (itemBack !== null){
+//     carrito = JSON.parse(itemBack);
+//   }
+//   mostrarCarrito();
+// }
