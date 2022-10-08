@@ -1,14 +1,4 @@
-// 2DA ENTREGA PROYECTO FINAL
-
-class Producto {
-  constructor(id, componente, img, nombre, precio) {
-    this.id = id;
-    this.componente = componente;
-    this.img = img;
-    this.nombre = nombre;
-    this.precio = Number(precio);
-  }
-}
+// DESAFIO FETCH
 
 class ProductoEnCarrito {
   constructor(prod) {
@@ -17,45 +7,18 @@ class ProductoEnCarrito {
   }
 }
 
-const p1 = new Producto(
-  1,
-  "Motherboard",
-  "img/motherboard.png",
-  "Asus B450",
-  20000
-);
-const p2 = new Producto(
-  2,
-  "Procesador",
-  "img/procesador.png",
-  "Ryzen 5600x",
-  50000
-);
-const p3 = new Producto(
-  3,
-  "Memoria ram",
-  "img/ram.png",
-  "G-Skill Trident Z 16gb",
-  25000
-);
-const p4 = new Producto(
-  4,
-  "Disco rígido",
-  "img/ssd.png",
-  "NVMe Samsung 970 evo 1TB",
-  45000
-);
-const p5 = new Producto(
-  5,
-  "Placa de video",
-  "img/placa-video.png",
-  "Asus RTX 3080ti",
-  330000
-);
+async function fetchProductos() {
+  const response = await fetch("./data.json");
+  return await response.json();
+}
 
-const productos = [];
+let productos = [];
 
-productos.push(p1, p2, p3, p4, p5);
+fetchProductos().then((producto) => {
+  productos = producto;
+  console.log(productos);
+  mostrarProductos();
+});
 
 //DECLARO ARRAY DE CARRITO VACIO
 
@@ -63,11 +26,17 @@ let carrito = [];
 
 //MOSTRAR PRODUCTOS EN HTML
 
-const mostrarProductos = (productos) => {
+const mostrarProductos = () => {
   const seccionProductos = document.getElementById("seccion-productos");
   productos.forEach((producto) => {
     const card = document.createElement("card");
-    card.classList.add('d-flex', 'justify-content-center','col-12', 'col-md-6', 'col-xl-2')
+    card.classList.add(
+      "d-flex",
+      "justify-content-center",
+      "col-12",
+      "col-md-6",
+      "col-xl-2"
+    );
     card.innerHTML += `<div class="card mt-3 text-center" style="width: 18rem;">
         <img src="${producto.img}" class="card-img-top"  alt="...">
         <div class="card-body">
@@ -108,7 +77,7 @@ const mostrarProductos = (productos) => {
 function mostrarCarrito() {
   const section = document.getElementById("seccion-carrito");
   section.innerHTML = "";
-  section.innerHTML += `<h5>Productos en carrito</h5>`
+  section.innerHTML += `<h5>Productos en carrito</h5>`;
   let total = 0;
   carrito.forEach((p) => {
     total += p.producto.precio * p.cantidad;
@@ -117,60 +86,65 @@ function mostrarCarrito() {
             <p>${p.cantidad} x ${p.producto.nombre}: $${
       p.producto.precio * p.cantidad
     }</p>
+            <button class="btn btn-danger" onclick="restarUnoAProducto(${
+            p.producto.id
+            })">-</button>
             <button class="btn btn-success" onclick="sumarUnoAProducto(${
               p.producto.id
             })">+</button>
-            <button class="btn btn-danger" onclick="restarUnoAProducto(${
-              p.producto.id
-            })">-</button>
-        </div>
+            </div>
         `;
     addLocalStorage();
-    
   });
 
   section.innerHTML += `<p>Total: $${total}</p>`;
-  section.innerHTML += `<a class="btn btn-success" id="finalizarCompra">Finalizar compra</a>`;
   section.innerHTML += `<a class="btn btn-danger ms-1" id="buttonVaciar">Vaciar carrito</a>`;
+  section.innerHTML += `<a class="btn btn-success" id="finalizarCompra">Finalizar compra</a>`;
 
   const buttonFinalizar = document.querySelector("#finalizarCompra");
-  buttonFinalizar.addEventListener("click", () => {
-const swalWithBootstrapButtons = Swal.mixin({
-  customClass: {
-    confirmButton: 'btn btn-success',
-    cancelButton: 'btn btn-danger'
-  },
-  buttonsStyling: false
-})
+    buttonFinalizar.addEventListener("click", () => {
+      if (carrito == 0) {
+        Swal.fire({
+          title: 'Debe agregar productos al carrito',
+          icon: 'warning',
+        })
+      }else{
+    const swalWithBootstrapButtons = Swal.mixin({
+      customClass: {
+        confirmButton: "btn btn-success",
+        cancelButton: "btn btn-danger",
+      },
+      buttonsStyling: false,
+    });
 
-swalWithBootstrapButtons.fire({
-  title: 'Esta seguro/a que desea finalizar?',
-  text: "Presione si para continuar o no para agregar mas productos",
-  icon: 'question',
-  showCancelButton: true,
-  confirmButtonText: 'Si',
-  cancelButtonText: 'No',
-  reverseButtons: true
-}).then((result) => {
-  if (result.isConfirmed) {
-    swalWithBootstrapButtons.fire(
-      'Felicitaciones!',
-      'Su compra fue procesada con exito',
-      'success'
-    )
-    vaciarCarrito();
-    addLocalStorage();
-  } else if (
-    result.dismiss === Swal.DismissReason.cancel
-  ) {
-    swalWithBootstrapButtons.fire(
-      'Compra cancelada',
-      'Puede continuar agregando productos',
-      'info'
-    )
-  }
-})
-
+    swalWithBootstrapButtons
+      .fire({
+        title: "Esta seguro/a que desea finalizar?",
+        text: "Presione si para continuar o no para agregar mas productos",
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonText: "Si",
+        cancelButtonText: "No",
+        reverseButtons: true,
+      })
+      .then((result) => {
+        if (result.isConfirmed) {
+          swalWithBootstrapButtons.fire(
+            "Felicitaciones!",
+            "Su compra fue procesada con exito",
+            "success"
+          );
+          vaciarCarrito();
+          addLocalStorage();
+        } else if (result.dismiss === Swal.DismissReason.cancel) {
+          swalWithBootstrapButtons.fire(
+            "Compra cancelada",
+            "Puede continuar agregando productos",
+            "info"
+          );
+        }
+      });
+    }
   });
 
   const buttonV = document.querySelector("#buttonVaciar");
@@ -178,7 +152,6 @@ swalWithBootstrapButtons.fire({
     vaciarCarrito();
     addLocalStorage();
   });
-
 }
 
 //FUNCION VACIAR EL CARRITO DE COMPRA
@@ -197,7 +170,7 @@ function productoAdd(p) {
 //FUNCION PARA QUITAR UNA UNIDAD DE PRODUCTO
 
 function subtract(p) {
-p.cantidad !== 0 && p.cantidad--;
+  p.cantidad !== 0 && p.cantidad--;
 }
 
 // function subtract(p) {
@@ -245,9 +218,9 @@ function addLocalStorage() {
 //Funcion para traer desde localStorage
 
 function getItemBack() {
-const itemBack = localStorage.getItem("carrito");
-itemBack !== null && (carrito = JSON.parse(itemBack));
-mostrarCarrito()
+  const itemBack = localStorage.getItem("carrito");
+  itemBack !== null && (carrito = JSON.parse(itemBack));
+  mostrarCarrito();
 }
 
 // function getItemBack() {
