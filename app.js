@@ -16,7 +16,6 @@ let productos = [];
 
 fetchProductos().then((producto) => {
   productos = producto;
-  console.log(productos);
   mostrarProductos();
 });
 
@@ -98,59 +97,67 @@ function mostrarCarrito() {
   });
 
   section.innerHTML += `<p>Total: $${total}</p>`;
-  section.innerHTML += `<a class="btn btn-danger ms-1" id="buttonVaciar">Vaciar carrito</a>`;
-  section.innerHTML += `<a class="btn btn-success" id="finalizarCompra">Finalizar compra</a>`;
-
-  const buttonFinalizar = document.querySelector("#finalizarCompra");
-    buttonFinalizar.addEventListener("click", () => {
-      if (carrito == 0) {
-        Swal.fire({
-          title: 'Debe agregar productos al carrito',
-          icon: 'warning',
-        })
-      }else{
-    const swalWithBootstrapButtons = Swal.mixin({
-      customClass: {
-        confirmButton: "btn btn-success",
-        cancelButton: "btn btn-danger",
-      },
-      buttonsStyling: false,
-    });
-
-    swalWithBootstrapButtons
-      .fire({
-        title: "Esta seguro/a que desea finalizar?",
-        text: "Presione si para continuar o no para agregar mas productos",
-        icon: "question",
-        showCancelButton: true,
-        confirmButtonText: "Si",
-        cancelButtonText: "No",
-        reverseButtons: true,
-      })
-      .then((result) => {
-        if (result.isConfirmed) {
-          swalWithBootstrapButtons.fire(
-            "Felicitaciones!",
-            "Su compra fue procesada con exito",
-            "success"
-          );
-          vaciarCarrito();
-          addLocalStorage();
-        } else if (result.dismiss === Swal.DismissReason.cancel) {
-          swalWithBootstrapButtons.fire(
-            "Compra cancelada",
-            "Puede continuar agregando productos",
-            "info"
-          );
-        }
-      });
-    }
-  });
+  section.innerHTML += `<a class="btn btn-danger" id="buttonVaciar">Vaciar carrito</a>`;
+  section.innerHTML += `<a class="btn btn-success ms-1" id="comprar">Comprar</a>`;
 
   const buttonV = document.querySelector("#buttonVaciar");
   buttonV.addEventListener("click", () => {
     vaciarCarrito();
     addLocalStorage();
+  });
+
+  const buttonF = document.getElementById("comprar");
+  const formulario = document.getElementById("formulario");
+
+  buttonF.addEventListener("click", () => {
+    if (carrito.length === 0) {
+      Swal.fire({
+        title: "Su Carrito esta Vacio",
+        icon: "warning",
+      });
+      return;
+    }
+
+    formulario.classList.remove("d-none");
+    window.scrollTo({ top: 200000 });
+  });
+
+  formulario.addEventListener("submit", ev => {
+    ev.preventDefault();
+
+    const data = new FormData(formulario);
+
+    const nombre = data.get("nombre");
+    const apellido = data.get("apellido");
+    const direccion = data.get("direccion");
+
+    if (carrito.length === 0) {
+      Swal.fire({
+        title: "Su Carrito esta Vacio",
+        icon: "warning",
+      });
+      return;
+    }
+    Swal.fire({
+        title: `Seguro/a ${nombre} ${apellido} que quiere Finalizar su Compra?`,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'si estoy seguro!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            vaciarCarrito();
+            addLocalStorage();
+            Swal.fire(
+            `Muchas Gracias ${nombre} ${apellido} por realizar su Compra`,
+            `El pedido llegará en el transcurso de los próximos 10 días a la siguiente dirección: ${direccion}`,
+            'success'
+            );
+            formulario.classList.add("d-none");
+            formulario.reset();
+        }
+    })
   });
 }
 
@@ -172,13 +179,6 @@ function productoAdd(p) {
 function subtract(p) {
   p.cantidad !== 0 && p.cantidad--;
 }
-
-// function subtract(p) {
-//   if (p.cantidad == 0) {
-//     return;
-//   }
-//   p.cantidad--;
-// }
 
 //FUNCION PARA AGREGAR UNIDAD CON BOTON SEGUN ID DE PRODUCTO
 
@@ -222,11 +222,3 @@ function getItemBack() {
   itemBack !== null && (carrito = JSON.parse(itemBack));
   mostrarCarrito();
 }
-
-// function getItemBack() {
-//   const itemBack = localStorage.getItem("carrito");
-//   if (itemBack !== null){
-//     carrito = JSON.parse(itemBack);
-//   }
-//   mostrarCarrito();
-// }
