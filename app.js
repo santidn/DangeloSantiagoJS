@@ -1,4 +1,3 @@
-// DESAFIO FETCH
 
 class ProductoEnCarrito {
   constructor(prod) {
